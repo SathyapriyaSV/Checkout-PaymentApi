@@ -1,10 +1,15 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 
+using PaymentGateway.Api.Clients;
 using PaymentGateway.Api.Controllers;
+using PaymentGateway.Api.Interfaces;
 using PaymentGateway.Api.Models.Responses;
+using PaymentGateway.Api.Repositories;
 using PaymentGateway.Api.Services;
 
 namespace PaymentGateway.Api.Tests;
@@ -23,18 +28,25 @@ public class PaymentsControllerTests
             ExpiryYear = _random.Next(2023, 2030),
             ExpiryMonth = _random.Next(1, 12),
             Amount = _random.Next(1, 10000),
-            CardNumberLastFour = _random.Next(1111, 9999),
+            CardNumberLastFour = _random.Next(1111, 9999).ToString(),
             Currency = "GBP"
         };
 
         var paymentsRepository = new PaymentsRepository();
         paymentsRepository.Add(payment);
 
-        var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
-        var client = webApplicationFactory.WithWebHostBuilder(builder =>
-            builder.ConfigureServices(services => ((ServiceCollection)services)
-                .AddSingleton(paymentsRepository)))
-            .CreateClient();
+        var webApplicationFactory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureServices(services =>
+                {
+                    services.AddSingleton<IPaymentsRepository>(paymentsRepository);
+                    services.AddSingleton<IPaymentsService, PaymentsService>();
+                    services.AddSingleton<IBankHttpClient, BankHttpClient>();
+                });
+            });
+
+        var client = webApplicationFactory.CreateClient();
 
         // Act
         var response = await client.GetAsync($"/api/Payments/{payment.Id}");
@@ -49,7 +61,7 @@ public class PaymentsControllerTests
     public async Task Returns404IfPaymentNotFound()
     {
         // Arrange
-        var webApplicationFactory = new WebApplicationFactory<PaymentsController>();
+        var webApplicationFactory = new WebApplicationFactory<Program>();
         var client = webApplicationFactory.CreateClient();
         
         // Act

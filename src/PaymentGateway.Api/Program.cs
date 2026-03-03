@@ -1,3 +1,6 @@
+using PaymentGateway.Api.Clients;
+using PaymentGateway.Api.Interfaces;
+using PaymentGateway.Api.Repositories;
 using PaymentGateway.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +12,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<PaymentsRepository>();
+builder.Services.AddSingleton<IPaymentsRepository, PaymentsRepository>();
+builder.Services.AddTransient<IPaymentsService, PaymentsService>();
 
+//Included BankHttpClient
+builder.Services.AddHttpClient<IBankHttpClient, BankHttpClient>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:8080/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,3 +37,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

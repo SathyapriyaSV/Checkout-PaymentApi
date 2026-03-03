@@ -1,8 +1,9 @@
-﻿using PaymentGateway.Api.Models.Responses;
+﻿using PaymentGateway.Api.Interfaces;
+using PaymentGateway.Api.Models.Responses;
 
-namespace PaymentGateway.Api.Services;
+namespace PaymentGateway.Api.Repositories;
 
-public class PaymentsRepository
+public class PaymentsRepository :IPaymentsRepository
 {
     public List<PostPaymentResponse> Payments = new();
     
@@ -11,7 +12,7 @@ public class PaymentsRepository
         Payments.Add(payment);
     }
 
-    public PostPaymentResponse Get(Guid id)
+    public PostPaymentResponse? Get(Guid id)
     {
         return Payments.FirstOrDefault(p => p.Id == id);
     }
