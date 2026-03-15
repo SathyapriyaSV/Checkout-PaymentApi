@@ -15,7 +15,7 @@ namespace PaymentGateway.Api.Services
         private readonly IBankHttpClient _bankHttpClient = bankHttpClient;
         private readonly IPaymentsRepository _repository = repository;
 
-        //Leaving it Synchronous as it is in-memory and not doing any I/O operations, but can be made asynchronous if needed in the future when integrating with external services.
+        //Leaving it Synchronous as it is in-memory and not doing any I/O operations
         public PostPaymentResponse? GetPayment(Guid id)
         {
             var result = _repository.Get(id);
