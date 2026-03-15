@@ -1,5 +1,9 @@
-﻿using PaymentGateway.Api.Clients.Models;
-using PaymentGateway.Api.Interfaces;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Xml;
+
+using PaymentGateway.Api.External.Interfaces;
+using PaymentGateway.Api.External.Models.Response;
 
 namespace PaymentGateway.Api.Clients
 {

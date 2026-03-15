@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace PaymentGateway.Api.Clients.Models
+namespace PaymentGateway.Api.External.Models.Response
 {
-    public class PaymentResponse
+    public class BankPaymentResponse
     {
         [JsonPropertyName("authorized")]
         public bool Authorized { get; set; } 
 
         [JsonPropertyName("authorization_code")]
-        public Guid AuthorizationCode { get; set; } 
+        public string? AuthorizationCode { get; set; } 
     }
 }

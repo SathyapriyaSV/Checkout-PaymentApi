@@ -2,12 +2,12 @@
 
 namespace PaymentGateway.Api.Models.Requests;
 
-public class PostPaymentRequest
+public class PostPaymentRequest : IValidatableObject
 {
     [Required]
     [StringLength(19, MinimumLength = 14)]
     [RegularExpression(@"^\d+$", ErrorMessage = "Card number must contain only numeric characters.")]
-    public required string CardNumber { get; set; }
+    public string? CardNumber { get; set; }
 
     [Required]
     [Range(1, 12, ErrorMessage = "Expiry month must be between 1 and 12.")]
@@ -18,7 +18,7 @@ public class PostPaymentRequest
 
     [Required]
     [StringLength(3, MinimumLength = 3)]
-    public required string Currency { get; set; }
+    public string? Currency { get; set; }
 
     [Required]
     [Range(0, int.MaxValue, ErrorMessage = "Amount must be a positive integer.")]
@@ -27,7 +27,7 @@ public class PostPaymentRequest
     [Required]
     [StringLength(4, MinimumLength = 3)]
     [RegularExpression(@"^\d{3,4}$", ErrorMessage = "CVV must be 3-4 numeric characters.")]
-    public required string CVV { get; set; }
+    public string? CVV { get; set; }
 
     // Limit validation to no more than 3 ISO currency codes
     private static readonly List<string> AllowedCurrencies = ["USD", "EUR", "GBP"];
@@ -38,7 +38,7 @@ public class PostPaymentRequest
 
         // Validate currency against allowed ISO codes (max 3 as required)
         if (!string.IsNullOrWhiteSpace(Currency) &&
-            !AllowedCurrencies.Contains(Currency.ToUpperInvariant()))
+            !AllowedCurrencies.Contains(Currency.ToUpper()))
         {
             results.Add(new ValidationResult(
                 $"Currency must be one of the following: {string.Join(", ", AllowedCurrencies)}.",

@@ -1,29 +1,35 @@
 using PaymentGateway.Api.Clients;
-using PaymentGateway.Api.Interfaces;
+using PaymentGateway.Api.External.Interfaces;
 using PaymentGateway.Api.Repositories;
+using PaymentGateway.Api.Repositories.Interfaces;
 using PaymentGateway.Api.Services;
+using PaymentGateway.Api.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(
+        new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IPaymentsRepository, PaymentsRepository>();
 builder.Services.AddTransient<IPaymentsService, PaymentsService>();
 
-//Included BankHttpClient
+//BankHttpClient
 builder.Services.AddHttpClient<IBankHttpClient, BankHttpClient>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:8080/");
+    client.BaseAddress = new Uri(builder.Configuration["BankApi:BaseUrl"]!);
+
     client.Timeout = TimeSpan.FromSeconds(30);
 });
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
