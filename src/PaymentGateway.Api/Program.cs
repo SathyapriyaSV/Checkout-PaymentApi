@@ -18,7 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IPaymentsRepository, PaymentsRepository>();
-builder.Services.AddTransient<IPaymentsService, PaymentsService>();
+builder.Services.AddScoped<IPaymentsService, PaymentsService>();
 
 //BankHttpClient
 builder.Services.AddHttpClient<IBankHttpClient, BankHttpClient>(client =>
